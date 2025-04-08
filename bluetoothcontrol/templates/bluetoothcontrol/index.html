@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Control RGB</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Control LED RGB</h1>
+    
+    <div>
+        <label>Rojo (0-255): </label>
+        <input type="range" id="r" min="0" max="255" value="0">
+        <span id="r-value">0</span>
+    </div>
+    
+    <div>
+        <label>Verde (0-255): </label>
+        <input type="range" id="g" min="0" max="255" value="0">
+        <span id="g-value">0</span>
+    </div>
+    
+    <div>
+        <label>Azul (0-255): </label>
+        <input type="range" id="b" min="0" max="255" value="0">
+        <span id="b-value">0</span>
+    </div>
+    
+    <button id="enviar">Enviar a Arduino</button>
+    
+    <div id="respuesta" style="margin-top: 20px;"></div>
+
+    <script>
+    $(document).ready(function() {
+        // Actualizar valores mostrados
+        $('input[type="range"]').on('input', function() {
+            $('#' + this.id + '-value').text($(this).val());
+        });
+        
+        // Enviar al Arduino
+        $('#enviar').click(function() {
+            const r = $('#r').val();
+            const g = $('#g').val();
+            const b = $('#b').val();
+            
+            $.ajax({
+                url: '/enviar_rgb/',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({r: r, g: g, b: b}),
+                success: function(response) {
+                    $('#respuesta').html(`
+                        <p>Estado: ${response.status}</p>
+                        <p>Comando: ${response.comando}</p>
+                        <p>Hora: ${new Date().toLocaleTimeString()}</p>
+                    `);
+                },
+                error: function(xhr) {
+                    $('#respuesta').html(`
+                        <p style="color:red">Error: ${xhr.responseJSON?.message || 'Error desconocido'}</p>
+                    `);
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html>
