@@ -1,42 +1,62 @@
+
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" href="stylergb.css">
     <title>Control RGB</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body>
-    <h1>Control LED RGB</h1>
+<body class="center">
+    <br><br><br><h1>Control LED RGB</h1>
     
     <div>
+        <br><br><br>
         <label>Rojo (0-255): </label>
         <input type="range" id="r" min="0" max="255" value="0">
         <span id="r-value">0</span>
     </div>
     
     <div>
+        <br>
         <label>Verde (0-255): </label>
         <input type="range" id="g" min="0" max="255" value="0">
         <span id="g-value">0</span>
     </div>
     
     <div>
+        <br>
         <label>Azul (0-255): </label>
         <input type="range" id="b" min="0" max="255" value="0">
         <span id="b-value">0</span>
     </div>
+    <br><br>
+
+    <div id="color-preview" style="width: 100px; height: 100px; margin: 20px auto; border: 2px solid #333; border-radius: 10px;"></div>
     
-    <button id="enviar">Enviar a Arduino</button>
+    <br><br><button class="button" id="enviar">Enviar a Arduino</button>
     
     <div id="respuesta" style="margin-top: 20px;"></div>
 
     <script>
+    function updateColor() {
+    const r = $('#r').val();
+    const g = $('#g').val();
+    const b = $('#b').val();
+    const rgb = `rgb(${r}, ${g}, ${b})`;
+    $('#color-preview').css('background-color', rgb);
+    }
+
     $(document).ready(function() {
-        // Actualizar valores mostrados
+        // actualizar valores mostrados
         $('input[type="range"]').on('input', function() {
             $('#' + this.id + '-value').text($(this).val());
+            updateColor();
         });
+
+        // inicializar color
+        updateColor();
         
-        // Enviar al Arduino
+        // enviar al arduino
         $('#enviar').click(function() {
             const r = $('#r').val();
             const g = $('#g').val();
