@@ -1,87 +1,125 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <link rel="stylesheet" href="stylergb.css">
+    <meta charset="UTF-8">
     <title>Control RGB</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
-<body class="center">
-    <br><br><br><h1>Control LED RGB</h1>
-    
-    <div>
-        <br><br><br>
-        <label>Rojo (0-255): </label>
-        <input type="range" id="r" min="0" max="255" value="0">
-        <span id="r-value">0</span>
-    </div>
-    
-    <div>
-        <br>
-        <label>Verde (0-255): </label>
-        <input type="range" id="g" min="0" max="255" value="0">
-        <span id="g-value">0</span>
-    </div>
-    
-    <div>
-        <br>
-        <label>Azul (0-255): </label>
-        <input type="range" id="b" min="0" max="255" value="0">
-        <span id="b-value">0</span>
-    </div>
-    <br><br>
+    <style>
+        body {
+            background-color: #1e1f26;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
 
-    <div id="color-preview" style="width: 100px; height: 100px; margin: 20px auto; border: 2px solid #333; border-radius: 10px;"></div>
-    
-    <br><br><button class="button" id="enviar">Enviar a Arduino</button>
-    
-    <div id="respuesta" style="margin-top: 20px;"></div>
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #00ffaa;
+        }
+
+        .foco-card {
+            background: #2c2f39;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 300px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            transition: transform 0.2s ease;
+        }
+
+        .foco-card:hover {
+            transform: scale(1.03);
+        }
+
+        .foco-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+            transition: color 0.3s ease;
+        }
+
+        .btn-toggle {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .on {
+            background-color: #04AA6D;
+            color: white;
+        }
+
+        .off {
+            background-color: #ff3e3e;
+            color: white;
+        }
+
+        #respuesta {
+            margin-top: 30px;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Control de Focos RGB</h1>
+
+    <div class="foco-card">
+        <i id="icon-r" class="foco-icon fa-solid fa-lightbulb" style="color: #333;"></i>
+        <h2>Foco 1</h2>
+        <button class="btn-toggle on" data-id="r" data-value="1">Encender</button>
+        <button class="btn-toggle off" data-id="r" data-value="0">Apagar</button>
+    </div>
+
+    <div class="foco-card">
+        <i id="icon-g" class="foco-icon fa-solid fa-lightbulb" style="color: #333;"></i>
+        <h2>Foco 2</h2>
+        <button class="btn-toggle on" data-id="g" data-value="1">Encender</button>
+        <button class="btn-toggle off" data-id="g" data-value="0">Apagar</button>
+    </div>
+
+    <button id="enviar" class="btn-toggle" style="background-color: #008CBA;">Enviar a Arduino</button>
+
+    <div id="respuesta"></div>
 
     <script>
-    function updateColor() {
-    const r = $('#r').val();
-    const g = $('#g').val();
-    const b = $('#b').val();
-    const rgb = `rgb(${r}, ${g}, ${b})`;
-    $('#color-preview').css('background-color', rgb);
-    }
+        const estados = { r: 0, g: 0 };
 
-    $(document).ready(function() {
-        // actualizar valores mostrados
-        $('input[type="range"]').on('input', function() {
-            $('#' + this.id + '-value').text($(this).val());
-            updateColor();
-        });
+        $(document).ready(function() {
+            $('.btn-toggle').click(function() {
+                const id = $(this).data('id');
+                const value = parseInt($(this).data('value'));
+                estados[id] = value;
+            });
 
-        // inicializar color
-        updateColor();
-        
-        // enviar al arduino
-        $('#enviar').click(function() {
-            const r = $('#r').val();
-            const g = $('#g').val();
-            const b = $('#b').val();
-            
-            $.ajax({
-                url: '/enviar_rgb/',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({r: r, g: g, b: b}),
-                success: function(response) {
-                    $('#respuesta').html(`
-                        <p>Estado: ${response.status}</p>
-                        <p>Comando: ${response.comando}</p>
-                        <p>Hora: ${new Date().toLocaleTimeString()}</p>
-                    `);
-                },
-                error: function(xhr) {
-                    $('#respuesta').html(`
-                        <p style="color:red">Error: ${xhr.responseJSON?.message || 'Error desconocido'}</p>
-                    `);
-                }
+            $('#enviar').click(function() {
+                $.ajax({
+                    url: '/enviar_rgb/',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(estados),
+                    success: function(response) {
+                        $('#respuesta').html(`
+                            <p>✅ Estado: ${response.status}</p>
+                            <p>📤 Comando: ${response.comando}</p>
+                            <p>⏰ Hora: ${new Date().toLocaleTimeString()}</p>
+                        `);
+                    },
+                    error: function(xhr) {
+                        $('#respuesta').html(`
+                            <p style="color:red">❌ Error: ${xhr.responseJSON?.message || 'Error desconocido'}</p>
+                        `);
+                    }
+                });
             });
         });
-    });
     </script>
 </body>
 </html>

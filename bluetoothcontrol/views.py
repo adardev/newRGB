@@ -8,7 +8,7 @@ from time import sleep
 import threading
 
 # Configuración
-SERIAL_PORTS = ['COM5', 'COM6']  # USB y Bluetooth
+SERIAL_PORTS = ['COM5', 'COM7']  # USB y Bluetooth
 BAUDRATE = 9600
 ser = None
 serial_lock = threading.Lock()
@@ -40,9 +40,8 @@ def enviar_rgb(request):
             data = json.loads(request.body)
             r = data.get('r', 0)
             g = data.get('g', 0)
-            b = data.get('b', 0)
             
-            comando = f"R{r},G{g},B{b}\n"
+            comando = f"R{r},G{g}\n"
             print(f"Enviando: {comando.strip()}")
             
             # Intenta enviar
