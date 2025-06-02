@@ -1,9 +1,10 @@
 from django.contrib import admin
 from django.urls import path
-from bluetoothcontrol.views import enviar_rgb, index
+from bluetoothcontrol.views import mover_angulo, secuencia, index
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', index, name='index'),
-    path('enviar_rgb/', enviar_rgb, name='enviar_rgb'),
+    path('mover_angulo/', mover_angulo, name='mover_angulo'),
+    path('secuencia/', secuencia, name='secuencia')
 ]
