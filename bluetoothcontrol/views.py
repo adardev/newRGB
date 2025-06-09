@@ -69,3 +69,30 @@ def enviar_rgb(request):
 
 def index(request):
     return render(request, 'bluetoothcontrol/index.html')
+
+#Code del UBIDOTS integrador
+
+import requests
+
+UBIDOTS_TOKEN = "BBUS-zJ4HFFCnJRWVC82VHNXUSi73aRLKil"  # Sustituye con tu token de Ubidots
+DEVICE_LABEL = "arduino"  # O el nombre de tu dispositivo
+
+payload = {
+    "Temperatura": 25.5,
+    "HumedadAmbiente": 60.0,
+    "HumedadTierra": 60.0,
+    "Foco": 60.0,
+    "Ventilador": 60.0,
+    "Bomba": 60.0,
+}
+
+url = f"https://industrial.api.ubidots.com/api/v1.6/devices/{DEVICE_LABEL}"
+headers = {
+    "X-Auth-Token": UBIDOTS_TOKEN,
+    "Content-Type": "application/json"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print("Status:", response.status_code)
+print("Respuesta:", response.text)
