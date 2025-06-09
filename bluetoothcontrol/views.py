@@ -83,7 +83,7 @@ payload = {
     "HumedadTierra": 60.0,
     "Foco": 60.0,
     "Ventilador": 60.0,
-    "Bomba": 60.0,
+    "Bomba": 60.0
 }
 
 url = f"https://industrial.api.ubidots.com/api/v1.6/devices/{DEVICE_LABEL}"
